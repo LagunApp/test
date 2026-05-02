@@ -1,25 +1,29 @@
 // ═══════════════════════════════════════════════════
-//  LAGUNAPP — DATA (Persistencia con LocalStorage)
+//  LAGUNAPP — DATA (Preparado para Supabase)
 // ═══════════════════════════════════════════════════
 
 /** 
- * Usuarios: Intenta cargar 'lagunapp_users' del navegador. 
- * Si no existe (primera vez), devuelve un array vacío [].
+ * Estos arrays ahora empezarán vacíos porque los llenarás 
+ * con la respuesta que venga de tu consulta a Supabase (fetch).
  */
-let demoUsers = JSON.parse(localStorage.getItem('lagunapp_users')) || [];
+let demoUsers = [];
+let chats = {};
+let groups = [];
 
-/** 
- * Chats y Grupos: Se cargan dinámicamente desde el almacenamiento local.
+/**
+ * Función para inicializar los datos. 
+ * Ahora la llamarás después de hacer el login con Supabase.
  */
 function seedChats() {
-  // Carga los chats guardados o un objeto vacío
-  chats = JSON.parse(localStorage.getItem('lagunapp_chats')) || {};
-  
-  // Carga los grupos guardados o un array vacío
-  groups = JSON.parse(localStorage.getItem('lagunapp_groups')) || [];
+  // Aquí puedes poner lógica de limpieza si fuera necesario antes de 
+  // cargar los datos reales de la base de datos.
+  chats = {}; 
+  groups = [];
 }
 
-// ── Quiz options (Necesarios para que el registro funcione) ────────────────
+// ── Quiz options (ESTRICTAMENTE NECESARIO) ────────────────
+// Mantenemos esto aquí porque lo necesitas para renderizar las 
+// opciones del registro en el frontend.
 const QUIZ_DATA = {
   cities: [
     "Bilbo","Donostia","Gasteiz","Iruñea","Baiona",
@@ -61,6 +65,7 @@ const QUIZ_DATA = {
   ],
 };
 
-// ── Demo credentials ────────────────────────────────
+// ⚠️ NOTA: Las DEMO_CREDENTIALS ya no son necesarias si usas 
+// el Auth oficial de Supabase, pero puedes dejarlas si aún haces pruebas.
 const DEMO_EMAIL    = 'demo@lagunapp.eu';
 const DEMO_PASSWORD = 'demo123';
