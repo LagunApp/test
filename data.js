@@ -1,19 +1,23 @@
 // ═══════════════════════════════════════════════════
-//  LAGUNAPP — DATA
+//  LAGUNAPP — DATA (Versión Limpia / Sin Bots)
 // ═══════════════════════════════════════════════════
 
-// ── Demo users ──────────────────────────────────────
+/** 
+ * Lista de usuarios vacía. 
+ * No aparecerán perfiles en la sección de "Descubrir".
+ */
 const demoUsers = [];
 
-// ── Seed chats & groups ─────────────────────────────
+/** 
+ * Inicialización de chats y grupos vacía.
+ * No habrá conversaciones ni grupos por defecto.
+ */
 function seedChats() {
-  chats = {};
-  chats[1] = [];
-  groups = []},
-  ];
+  chats = {}; 
+  groups = [];
 }
 
-// ── Quiz options ─────────────────────────────────────
+// ── Quiz options (Se mantienen para que el registro funcione) ────────────────
 const QUIZ_DATA = {
   cities: [
     "Bilbo","Donostia","Gasteiz","Iruñea","Baiona",
