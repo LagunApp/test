@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LagunApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{font-family:'Poppins',sans-serif;box-sizing:border-box;}
+    body{background:#f0f7f4;margin:0;}
+
+    /* COLORS */
+    :root{--g1:#1b4332;--g2:#2d6a4f;--g3:#52b788;--g4:#74c69d;--g5:#d8f3dc;}
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:5px;height:5px;}
+    ::-webkit-scrollbar-thumb{background:#52b788;border-radius:10px;}
+
+    /* PAGES */
+    .screen{display:none;min-height:100vh;}
+    .screen.active{display:flex;}
+
+    /* AUTH */
+    .auth-left{background:linear-gradient(160deg,#1b4332 0%,#2d6a4f 50%,#52b788 100%);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden;}
+    .auth-left::before{content:'';position:absolute;top:-100px;right:-100px;width:350px;height:350px;background:rgba(255,255,255,0.05);border-radius:50%;}
+    .auth-left::after{content:'';position:absolute;bottom:-80px;left:-80px;width:250px;height:250px;background:rgba(255,255,255,0.04);border-radius:50%;}
+    .auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;background:#fff;}
+    .logo-big{font-size:3rem;font-weight:800;color:#fff;letter-spacing:-1px;}
+    .logo-big span{color:#74c69d;}
+    .auth-tagline{color:#b7e4c7;font-size:1.05rem;margin-top:12px;text-align:center;line-height:1.6;max-width:320px;}
+
+    .inp{width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:12px;font-size:0.9rem;font-family:'Poppins',sans-serif;outline:none;transition:border-color .2s;background:#f9fafb;color:#111;}
+    .inp:focus{border-color:#52b788;background:#fff;}
+    .lbl{display:block;font-weight:600;color:#1b4332;font-size:0.82rem;margin-bottom:5px;}
+    .btn-g{background:linear-gradient(135deg,#52b788,#74c69d);color:#1b4332;font-weight:700;padding:13px 28px;border-radius:12px;border:none;cursor:pointer;font-size:0.95rem;width:100%;transition:all .25s;box-shadow:0 4px 15px rgba(82,183,136,.3);}
+    .btn-g:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(82,183,136,.4);}
+    .btn-outline{background:transparent;color:#52b788;font-weight:600;padding:11px 28px;border-radius:12px;border:2px solid #52b788;cursor:pointer;font-size:0.9rem;width:100%;transition:all .2s;}
+    .btn-outline:hover{background:#f0fdf4;}
+
+    /* QUIZ */
+    .quiz-wrap{background:#fff;border-radius:24px;padding:40px;max-width:560px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.1);}
+    .quiz-step{display:none;}
+    .quiz-step.active{display:block;}
+    .step-bar-fill{height:6px;background:linear-gradient(90deg,#52b788,#74c69d);border-radius:3px;transition:width .4s;}
+    .opt-btn{padding:10px 18px;border-radius:50px;border:2px solid #e5e7eb;cursor:pointer;font-size:0.85rem;font-weight:500;color:#374151;transition:all .2s;background:#f9fafb;font-family:'Poppins',sans-serif;}
+    .opt-btn.sel{background:linear-gradient(135deg,#52b788,#74c69d);border-color:#52b788;color:#fff;font-weight:700;}
+    .opt-btn:hover:not(.sel){border-color:#52b788;color:#1b4332;}
+
+    /* MAIN APP */
+    .app-shell{display:flex;height:100vh;width:100%;overflow:hidden;}
+
+    /* SIDEBAR */
+    .sidebar{width:72px;background:linear-gradient(180deg,#1b4332 0%,#2d6a4f 100%);display:flex;flex-direction:column;align-items:center;padding:20px 0;gap:6px;flex-shrink:0;}
+    .sb-btn{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.6);border:none;background:transparent;}
+    .sb-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+    .sb-btn.active{background:rgba(255,255,255,.15);color:#74c69d;box-shadow:0 4px 15px rgba(0,0,0,.2);}
+    .sb-logo{font-size:1.3rem;font-weight:800;color:#74c69d;margin-bottom:16px;letter-spacing:-0.5px;}
+
+    /* MAIN PANEL */
+    .main-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+    /* TOP BAR */
+    .topbar{background:#fff;padding:0 24px;height:64px;display:flex;align-items:center;border-bottom:1px solid #e8f5e9;flex-shrink:0;gap:16px;}
+    .topbar-title{font-size:1.2rem;font-weight:700;color:#1b4332;}
+    .search-bar{flex:1;max-width:300px;position:relative;}
+    .search-bar input{width:100%;padding:9px 16px 9px 36px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:0.85rem;font-family:'Poppins',sans-serif;outline:none;background:#f9fafb;color:#111;}
+    .search-bar input:focus{border-color:#52b788;}
+    .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:0.9rem;}
+
+    /* VIEWS */
+    .view{display:none;flex:1;overflow-y:auto;padding:24px;}
+    .view.active{display:block;}
+
+    /* CARDS */
+    .profile-card{background:#fff;border-radius:20px;border:1px solid #e8f5e9;overflow:hidden;cursor:pointer;transition:all .25s;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+    .profile-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.12);}
+    .card-header{height:70px;background:linear-gradient(135deg,#1b4332,#52b788);}
+    .card-avatar{width:70px;height:70px;border-radius:50%;border:3px solid #fff;margin-top:-35px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4rem;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.15);flex-shrink:0;overflow:hidden;}
+    .card-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .tag{display:inline-block;padding:3px 10px;border-radius:50px;font-size:0.72rem;font-weight:600;margin:2px;}
+    .tag-g{background:#d8f3dc;color:#1b4332;}
+    .tag-b{background:#dbeafe;color:#1e40af;}
+    .tag-p{background:#ede9fe;color:#5b21b6;}
+    .tag-y{background:#fef9c3;color:#854d0e;}
+    .tag-r{background:#fee2e2;color:#991b1b;}
+    .tag-pk{background:#fce7f3;color:#9d174d;}
+    .match-pill{background:linear-gradient(135deg,#52b788,#74c69d);color:#fff;font-weight:700;font-size:0.75rem;padding:4px 10px;border-radius:50px;}
+
+    /* CHAT */
+    .chat-layout{display:flex;height:100%;overflow:hidden;}
+    .chat-list{width:300px;border-right:1px solid #e8f5e9;overflow-y:auto;flex-shrink:0;background:#fff;}
+    .chat-list-header{padding:16px;font-weight:700;color:#1b4332;border-bottom:1px solid #f0f7f4;font-size:1rem;position:sticky;top:0;background:#fff;z-index:2;}
+    .chat-item{padding:14px 16px;cursor:pointer;transition:background .2s;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f9fafb;}
+    .chat-item:hover{background:#f0fdf4;}
+    .chat-item.active{background:#e8f5e9;}
+    .chat-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#fff;flex-shrink:0;overflow:hidden;}
+    .chat-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .chat-name{font-weight:600;font-size:0.88rem;color:#111;}
+    .chat-preview{font-size:0.75rem;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+    .chat-window{flex:1;display:flex;flex-direction:column;background:#f0f7f4;}
+    .chat-header{padding:14px 20px;background:#fff;border-bottom:1px solid #e8f5e9;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+    .chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;}
+    .msg{max-width:68%;padding:10px 14px;border-radius:18px;font-size:0.88rem;line-height:1.5;position:relative;}
+    .msg-in{background:#fff;color:#111;border-bottom-left-radius:4px;align-self:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+    .msg-out{background:linear-gradient(135deg,#52b788,#74c69d);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}
+    .msg-time{font-size:0.65rem;opacity:.6;margin-top:3px;text-align:right;}
+    .chat-input-bar{padding:14px 20px;background:#fff;border-top:1px solid #e8f5e9;display:flex;gap:10px;align-items:center;flex-shrink:0;}
+    .chat-input{flex:1;padding:10px 16px;border:1.5px solid #e5e7eb;border-radius:24px;font-size:0.88rem;font-family:'Poppins',sans-serif;outline:none;}
+    .chat-input:focus{border-color:#52b788;}
+    .send-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#52b788,#74c69d);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .2s;flex-shrink:0;}
+    .send-btn:hover{transform:scale(1.1);}
+    .no-chat{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#9ca3af;}
+
+    /* GROUPS */
+    .group-card{background:#fff;border-radius:16px;border:1px solid #e8f5e9;padding:16px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+    .group-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+    .group-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+
+    /* MODAL */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+    .modal-box{background:#fff;border-radius:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:popIn .3s ease;}
+    @keyframes popIn{from{opacity:0;transform:scale(.9) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;right:28px;background:linear-gradient(135deg,#1b4332,#2d6a4f);color:#fff;padding:14px 22px;border-radius:14px;font-weight:600;font-size:.9rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(100px);opacity:0;transition:all .4s cubic-bezier(.175,.885,.32,1.275);}
+    .toast.show{transform:translateY(0);opacity:1;}
+
+    /* PROFILE VIEW MODAL */
+    .modal-header-bg{height:100px;background:linear-gradient(135deg,#1b4332,#52b788);}
+    .modal-avatar{width:80px;height:80px;border-radius:50%;border:4px solid #fff;margin-top:-40px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.6rem;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.15);overflow:hidden;flex-shrink:0;}
+    .modal-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+    /* ONLINE DOT */
+    .online-dot{width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid #fff;position:absolute;bottom:2px;right:2px;}
+
+    /* GROUP CREATE MODAL */
+    .member-check{display:none;}
+    .member-label{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;cursor:pointer;transition:background .15s;border:1.5px solid #e5e7eb;}
+    .member-check:checked+.member-label{background:#e8f5e9;border-color:#52b788;}
+
+    @media(max-width:768px){
+      .auth-left{display:none;}
+      .auth-right{padding:24px;}
+      .chat-list{width:220px;}
+    }
+    @media(max-width:600px){
+      .sidebar{width:56px;}
+      .sb-btn{width:40px;height:40px;font-size:1.2rem;}
+      .chat-list{width:180px;}
+      .chat-preview{max-width:100px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════ SCREEN: LOGIN ══════════════════════ -->
+<div id="sc-login" class="screen active" style="flex-direction:row;">
+  <div class="auth-left">
+    <div style="position:relative;z-index:1;text-align:center;">
+      <div class="logo-big">Lagun<span>App</span></div>
+      <p class="auth-tagline">Zure gustuekin bat datozen pertsonak aurkitu eta lagun berriak egin! 🎉</p>
+      <div style="margin-top:40px;display:flex;flex-direction:column;gap:14px;">
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 20px;text-align:left;">
+          <div style="font-size:1.3rem;">🎯</div>
+          <div style="color:#fff;font-weight:600;font-size:.9rem;margin-top:4px;">Match zehatza</div>
+          <div style="color:#b7e4c7;font-size:.8rem;margin-top:2px;">Zure gustuekin bat datozen perfilak</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 20px;text-align:left;">
+          <div style="font-size:1.3rem;">💬</div>
+          <div style="color:#fff;font-weight:600;font-size:.9rem;margin-top:4px;">Chat eta Taldeak</div>
+          <div style="color:#b7e4c7;font-size:.8rem;margin-top:2px;">Hitz egin eta taldeak sortu</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 20px;text-align:left;">
+          <div style="font-size:1.3rem;">🔒</div>
+          <div style="color:#fff;font-weight:600;font-size:.9rem;margin-top:4px;">Pribatua eta segurua</div>
+          <div style="color:#b7e4c7;font-size:.8rem;margin-top:2px;">Zuk kontrolatzen duzu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div style="max-width:380px;width:100%;">
+      <h2 style="font-size:1.8rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Ongi etorri! 👋</h2>
+      <p style="color:#6b7280;font-size:.9rem;margin-bottom:28px;">Sartu zure kontura edo sortu bat</p>
+
+      <!-- TABS -->
+      <div style="display:flex;background:#f3f4f6;border-radius:12px;padding:4px;margin-bottom:24px;">
+        <button id="tab-login" onclick="switchTab('login')" style="flex:1;padding:9px;border-radius:9px;border:none;font-family:'Poppins',sans-serif;font-weight:600;font-size:.88rem;cursor:pointer;background:#fff;color:#1b4332;box-shadow:0 1px 6px rgba(0,0,0,.1);transition:all .2s;">Hasi saioa</button>
+        <button id="tab-reg" onclick="switchTab('reg')" style="flex:1;padding:9px;border-radius:9px;border:none;font-family:'Poppins',sans-serif;font-weight:600;font-size:.88rem;cursor:pointer;background:transparent;color:#6b7280;transition:all .2s;">Erregistratu</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="form-login">
+        <div style="margin-bottom:16px;">
+          <label class="lbl">📧 Email-a</label>
+          <input id="li-email" type="email" class="inp" placeholder="izena@email.com"/>
+        </div>
+        <div style="margin-bottom:24px;">
+          <label class="lbl">🔒 Pasahitza</label>
+          <input id="li-pass" type="password" class="inp" placeholder="••••••••"/>
+        </div>
+        <button class="btn-g" onclick="doLogin()">Sartu →</button>
+        <p style="text-align:center;margin-top:16px;font-size:.82rem;color:#9ca3af;">
+          Konturik ez? <span style="color:#52b788;cursor:pointer;font-weight:600;" onclick="switchTab('reg')">Erregistratu hemen</span>
+        </p>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="form-reg" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label class="lbl">👤 Izena</label>
+            <input id="reg-name" type="text" class="inp" placeholder="Zure izena"/>
+          </div>
+          <div>
+            <label class="lbl">🔑 Erabiltzaile-izena</label>
+            <input id="reg-user" type="text" class="inp" placeholder="@izena"/>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label class="lbl">📧 Email-a</label>
+          <input id="reg-email" type="email" class="inp" placeholder="izena@email.com"/>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label class="lbl">🔒 Pasahitza</label>
+          <input id="reg-pass" type="password" class="inp" placeholder="Min. 6 karaktere"/>
+        </div>
+        <button class="btn-g" onclick="doRegister()">Kontu sortu ✨</button>
+        <p style="text-align:center;margin-top:16px;font-size:.82rem;color:#9ca3af;">
+          Kontu bat baduzu? <span style="color:#52b788;cursor:pointer;font-weight:600;" onclick="switchTab('login')">Hasi saioa</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SCREEN: QUIZ ══════════════════════ -->
+<div id="sc-quiz" class="screen" style="align-items:center;justify-content:center;background:linear-gradient(135deg,#1b4332 0%,#2d6a4f 50%,#52b788 100%);padding:24px;">
+  <div class="quiz-wrap">
+    <!-- Progress -->
+    <div style="margin-bottom:28px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:.8rem;font-weight:600;color:#6b7280;" id="quiz-step-lbl">Galdera 1 / 7</span>
+        <span style="font-size:.8rem;color:#52b788;font-weight:600;" id="quiz-pct">14%</span>
+      </div>
+      <div style="height:6px;background:#e5e7eb;border-radius:3px;">
+        <div class="step-bar-fill" id="quiz-bar" style="width:14%;"></div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Edad + Origen -->
+    <div class="quiz-step active" id="qs-1">
+      <div style="font-size:2rem;margin-bottom:8px;">🙋</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Zenbat urte dituzu eta nongoa zara?</h3>
+      <p style="color:#6b7280;font-size:.85rem;margin-bottom:20px;">Hamasei urtetik aurrera erabili daiteke LagunApp</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label class="lbl">🎂 Adina</label>
+          <input id="q-age" type="number" min="16" max="99" class="inp" placeholder="25"/>
+        </div>
+        <div>
+          <label class="lbl">📍 Hiria</label>
+          <select id="q-city" class="inp">
+            <option value="">Hautatu...</option>
+            <!-- populated by data.js -->
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label class="lbl">🧑 Generoa</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="opt-btn" onclick="pickOpt(this,'gender')">👦 Gizona</button>
+          <button class="opt-btn" onclick="pickOpt(this,'gender')">👧 Emakumea</button>
+          <button class="opt-btn" onclick="pickOpt(this,'gender')">🌈 Ez-bitarra</button>
+          <button class="opt-btn" onclick="pickOpt(this,'gender')">🤐 Nahiago dut ez esan</button>
+        </div>
+      </div>
+      <button class="btn-g" onclick="nextStep(1)">Jarraitu →</button>
+    </div>
+
+    <!-- STEP 2: Comida favorita -->
+    <div class="quiz-step" id="qs-2">
+      <div style="font-size:2rem;margin-bottom:8px;">🍽️</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Zer da zure janari gogokoa?</h3>
+      <p style="color:#6b7280;font-size:.85rem;margin-bottom:20px;">Aukera bat edo gehiago hauta ditzakezu</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;" id="food-opts">
+        <!-- populated by data.js -->
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" style="max-width:100px;" onclick="prevStep(2)">← Atzera</button>
+        <button class="btn-g" onclick="nextStep(2)">Jarraitu →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Deporte favorito -->
+    <div class="quiz-step" id="qs-3">
+      <div style="font-size:2rem;margin-bottom:8px;">⚽</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Zer kirol gustatzen zaizu?</h3>
+      <p style="color:#6b7280;font-size:.85rem;margin-bottom:20px;">Gustuko dituzun guztiak hautatu</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;" id="sport-opts">
+        <!-- populated by data.js -->
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" style="max-width:100px;" onclick="prevStep(3)">← Atzera</button>
+        <button class="btn-g" onclick="nextStep(3)">Jarraitu →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Tiempo libre -->
+    <div class="quiz-step" id="qs-4">
+      <div style="font-size:2rem;margin-bottom:8px;">🎮</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Zer egiten duzu denbora librean?</h3>
+      <p style="color:#6b7280;font-size:.85rem;margin-bottom:20px;">Gustuko dituzun guztiak</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;" id="free-opts">
+        <!-- populated by data.js -->
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" style="max-width:100px;" onclick="prevStep(4)">← Atzera</button>
+        <button class="btn-g" onclick="nextStep(4)">Jarraitu →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Musica -->
+    <div class="quiz-step" id="qs-5">
+      <div style="font-size:2rem;margin-bottom:8px;">🎵</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Zer musika estilo gustatzen zaizu?</h3>
+      <p style="color:#6b7280;font-size:.85rem;margin-bottom:20px;">Bat baino gehiago hauta ditzakezu</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;" id="music-opts">
+        <!-- populated by data.js -->
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" style="max-width:100px;" onclick="prevStep(5)">← Atzera</button>
+        <button class="btn-g" onclick="nextStep(5)">Jarraitu →</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Personalidad -->
+    <div class="quiz-step" id="qs-6">
+      <div style="font-size:2rem;margin-bottom:8px;">😄</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Nolakoa zara?</h3>
+      <p style="color:#6b7280;font-size:.85rem;margin-bottom:20px;">Gehien adierazten zaituena aukeratu</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;" id="pers-opts">
+        <!-- populated by data.js -->
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" style="max-width:100px;" onclick="prevStep(6)">← Atzera</button>
+        <button class="btn-g" onclick="nextStep(6)">Jarraitu →</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: Planes favoritos -->
+    <div class="quiz-step" id="qs-7">
+      <div style="font-size:2rem;margin-bottom:8px;">📅</div>
+      <h3 style="font-size:1.3rem;font-weight:800;color:#1b4332;margin-bottom:6px;">Zer plan gustatzen zaizkizu?</h3>
+      <p style="color:#6b7280;font-size:.85rem;margin-bottom:20px;">Nolako planak egiten dituzu lagunartean?</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px;" id="plans-opts">
+        <!-- populated by data.js -->
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" style="max-width:100px;" onclick="prevStep(7)">← Atzera</button>
+        <button class="btn-g" onclick="finishQuiz()">🎉 Amaitu eta lagun berriak aurkitu!</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════ SCREEN: MAIN APP ══════════════════════ -->
+<div id="sc-app" class="screen" style="flex-direction:row;">
+  <div class="app-shell" style="width:100%;">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sb-logo">L</div>
+      <button class="sb-btn active" id="sb-discover" onclick="switchView('discover')" title="Aurkitu">🔍</button>
+      <button class="sb-btn" id="sb-chat" onclick="switchView('chat')" title="Chat">💬</button>
+      <button class="sb-btn" id="sb-groups" onclick="switchView('groups')" title="Taldeak">👥</button>
+      <button class="sb-btn" id="sb-profile" onclick="switchView('myprofile')" title="Nire Profila">👤</button>
+      <div style="flex:1;"></div>
+      <button class="sb-btn" onclick="doLogout()" title="Irten" style="color:#f87171;">🚪</button>
+    </nav>
+
+    <!-- MAIN PANEL -->
+    <div class="main-panel">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <span class="topbar-title" id="topbar-title">🔍 Lagun berriak aurkitu</span>
+        <div class="search-bar">
+          <span class="search-icon">🔎</span>
+          <input type="text" placeholder="Bilatu perfilak..." id="search-input" oninput="filterDiscover()"/>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+          <div id="topbar-user" style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="switchView('myprofile')">
+            <div id="topbar-avatar" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#52b788,#1b4332);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;overflow:hidden;"></div>
+            <span id="topbar-name" style="font-weight:600;font-size:.88rem;color:#1b4332;"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: DISCOVER -->
+      <div class="view active" id="view-discover">
+        <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h2 style="font-size:1.2rem;font-weight:700;color:#1b4332;margin:0;">Lagun berriak aurkitu 🌟</h2>
+            <p style="color:#6b7280;font-size:.82rem;margin:4px 0 0;">Zure gustuetan oinarrituta</p>
+          </div>
+          <!-- Filter pills -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="discover-filters">
+            <button class="tag tag-g" style="cursor:pointer;border:none;font-size:.78rem;padding:6px 14px;" onclick="setDiscoverFilter('all',this)">Guztiak</button>
+            <button class="tag tag-b" style="cursor:pointer;border:none;font-size:.78rem;padding:6px 14px;" onclick="setDiscoverFilter('sport',this)">⚽ Kirolak</button>
+            <button class="tag tag-p" style="cursor:pointer;border:none;font-size:.78rem;padding:6px 14px;" onclick="setDiscoverFilter('music',this)">🎵 Musika</button>
+            <button class="tag tag-y" style="cursor:pointer;border:none;font-size:.78rem;padding:6px 14px;" onclick="setDiscoverFilter('free',this)">🎮 Hobbiak</button>
+            <button class="tag tag-pk" style="cursor:pointer;border:none;font-size:.78rem;padding:6px 14px;" onclick="setDiscoverFilter('plans',this)">📅 Planak</button>
+          </div>
+        </div>
+        <div id="discover-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;"></div>
+      </div>
+
+      <!-- VIEW: CHAT -->
+      <div class="view" id="view-chat" style="padding:0;">
+        <div class="chat-layout">
+          <div class="chat-list">
+            <div class="chat-list-header">
+              💬 Mezuak
+              <span id="chat-count" style="font-size:.75rem;color:#52b788;font-weight:500;"></span>
+            </div>
+            <div id="chat-list-items"></div>
+          </div>
+          <div class="chat-window" id="chat-window-area">
+            <div class="no-chat" id="no-chat-msg">
+              <div style="font-size:3rem;">💬</div>
+              <div style="font-weight:600;color:#6b7280;">Hautatu elkarrizketa bat</div>
+              <div style="font-size:.82rem;color:#9ca3af;">edo aurkitu perfilak eta bidali mezu bat!</div>
+            </div>
+            <div id="chat-active" style="display:none;flex-direction:column;height:100%;">
+              <div class="chat-header">
+                <div id="ca-avatar" class="chat-avatar" style="width:40px;height:40px;"></div>
+                <div>
+                  <div id="ca-name" style="font-weight:700;font-size:.92rem;color:#111;"></div>
+                  <div style="font-size:.72rem;color:#22c55e;font-weight:500;">● Aktibo</div>
+                </div>
+                <button onclick="openProfileFromChat()" style="margin-left:auto;background:#f0fdf4;border:none;border-radius:10px;padding:7px 12px;cursor:pointer;font-size:.8rem;font-weight:600;color:#1b4332;">👤 Profila ikusi</button>
+              </div>
+              <div class="chat-messages" id="chat-messages"></div>
+              <div class="chat-input-bar">
+                <input class="chat-input" id="chat-msg-input" placeholder="Idatzi mezu bat..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+                <button class="send-btn" onclick="sendMessage()">➤</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: GROUPS -->
+      <div class="view" id="view-groups">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h2 style="font-size:1.2rem;font-weight:700;color:#1b4332;margin:0;">Taldeak 👥</h2>
+            <p style="color:#6b7280;font-size:.82rem;margin:4px 0 0;">Sortu edo sartu talde batean</p>
+          </div>
+          <button class="btn-g" style="width:auto;padding:10px 20px;font-size:.88rem;" onclick="openCreateGroup()">+ Talde berria sortu</button>
+        </div>
+        <div id="groups-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;"></div>
+      </div>
+
+      <!-- VIEW: MY PROFILE -->
+      <div class="view" id="view-myprofile">
+        <div style="max-width:680px;margin:0 auto;">
+          <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);margin-bottom:20px;border:1px solid #e8f5e9;">
+            <div style="height:110px;background:linear-gradient(135deg,#1b4332,#52b788);position:relative;">
+              <button onclick="openEditProfile()" style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:'Poppins',sans-serif;">✏️ Editatu</button>
+            </div>
+            <div style="padding:0 28px 24px;">
+              <div style="display:flex;align-items:flex-end;gap:16px;margin-top:-40px;margin-bottom:16px;">
+                <div id="mp-avatar" style="width:80px;height:80px;border-radius:50%;border:4px solid #fff;background:linear-gradient(135deg,#52b788,#1b4332);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:800;box-shadow:0 4px 14px rgba(0,0,0,.15);flex-shrink:0;overflow:hidden;"></div>
+                <div style="padding-bottom:6px;">
+                  <div id="mp-name" style="font-size:1.4rem;font-weight:800;color:#111;"></div>
+                  <div id="mp-sub" style="color:#6b7280;font-size:.85rem;"></div>
+                </div>
+              </div>
+              <div id="mp-bio" style="color:#374151;font-size:.9rem;line-height:1.6;padding:14px;background:#f9fafb;border-radius:12px;margin-bottom:16px;"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div style="background:#f0fdf4;border-radius:12px;padding:14px;">
+                  <div style="font-weight:700;font-size:.82rem;color:#1b4332;margin-bottom:8px;">⚽ Kirolak</div>
+                  <div id="mp-sports" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+                </div>
+                <div style="background:#eff6ff;border-radius:12px;padding:14px;">
+                  <div style="font-weight:700;font-size:.82rem;color:#1e40af;margin-bottom:8px;">🎵 Musika</div>
+                  <div id="mp-music" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+                </div>
+                <div style="background:#fdf4ff;border-radius:12px;padding:14px;">
+                  <div style="font-weight:700;font-size:.82rem;color:#6b21a8;margin-bottom:8px;">🎮 Denbora librea</div>
+                  <div id="mp-free" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+                </div>
+                <div style="background:#fffbeb;border-radius:12px;padding:14px;">
+                  <div style="font-weight:700;font-size:.82rem;color:#92400e;margin-bottom:8px;">📅 Plan gustukoak</div>
+                  <div id="mp-plans" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border-radius:20px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid #e8f5e9;">
+            <div style="font-weight:700;color:#1b4332;margin-bottom:12px;">😄 Nire izaera</div>
+            <div id="mp-pers" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL: PROFILE DETAIL ══════════════ -->
+<div id="modal-profile" class="modal-bg" style="display:none;" onclick="closeProfileModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header-bg"></div>
+    <div style="padding:0 24px 28px;">
+      <div style="display:flex;align-items:flex-end;gap:14px;margin-top:-40px;margin-bottom:14px;">
+        <div id="pm-avatar" class="modal-avatar"></div>
+        <div style="padding-bottom:4px;flex:1;">
+          <div id="pm-name" style="font-size:1.2rem;font-weight:800;color:#111;"></div>
+          <div id="pm-sub" style="color:#6b7280;font-size:.8rem;"></div>
+        </div>
+        <div id="pm-match" class="match-pill" style="margin-bottom:4px;"></div>
+      </div>
+      <div id="pm-bio" style="color:#374151;font-size:.85rem;line-height:1.6;padding:12px;background:#f9fafb;border-radius:12px;margin-bottom:14px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:#f0fdf4;border-radius:10px;padding:12px;">
+          <div style="font-size:.75rem;font-weight:700;color:#1b4332;margin-bottom:6px;">⚽ Kirolak</div>
+          <div id="pm-sports"></div>
+        </div>
+        <div style="background:#eff6ff;border-radius:10px;padding:12px;">
+          <div style="font-size:.75rem;font-weight:700;color:#1e40af;margin-bottom:6px;">🎵 Musika</div>
+          <div id="pm-music"></div>
+        </div>
+        <div style="background:#fdf4ff;border-radius:10px;padding:12px;">
+          <div style="font-size:.75rem;font-weight:700;color:#6b21a8;margin-bottom:6px;">🎮 Denbora librea</div>
+          <div id="pm-free"></div>
+        </div>
+        <div style="background:#fffbeb;border-radius:10px;padding:12px;">
+          <div style="font-size:.75rem;font-weight:700;color:#92400e;margin-bottom:6px;">📅 Planak</div>
+          <div id="pm-plans"></div>
+        </div>
+      </div>
+      <div style="background:#f9fafb;border-radius:10px;padding:12px;margin-bottom:16px;">
+        <div style="font-size:.75rem;font-weight:700;color:#374151;margin-bottom:6px;">😄 Izaera</div>
+        <div id="pm-pers"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button class="btn-g" onclick="startChatWith(currentModal)" style="font-size:.88rem;padding:11px;">💬 Mezu bat bidali</button>
+        <button class="btn-outline" onclick="closeProfileModal()" style="font-size:.88rem;padding:11px;">✕ Itxi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL: CREATE GROUP ══════════════ -->
+<div id="modal-group" class="modal-bg" style="display:none;" onclick="closeGroupModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()" style="max-width:440px;">
+    <div style="padding:28px;">
+      <h3 style="font-size:1.2rem;font-weight:800;color:#1b4332;margin-bottom:6px;">👥 Talde berria sortu</h3>
+      <p style="color:#6b7280;font-size:.82rem;margin-bottom:20px;">Eman izena eta aukeratu kideak</p>
+      <div style="margin-bottom:14px;">
+        <label class="lbl">📝 Taldearen izena</label>
+        <input id="grp-name" class="inp" placeholder="Adib: Mendizaleak 🏔️"/>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label class="lbl">🎨 Emojia</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="emoji-picker">
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt sel-emoji" onclick="pickEmoji(this,'⚽')">⚽</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'🏔️')">🏔️</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'🎵')">🎵</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'🎮')">🎮</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'🍕')">🍕</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'✈️')">✈️</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'📚')">📚</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'🎨')">🎨</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'🏖️')">🏖️</span>
+          <span style="font-size:1.4rem;cursor:pointer;padding:4px;border-radius:8px;" class="emoji-opt" onclick="pickEmoji(this,'🎭')">🎭</span>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label class="lbl">👥 Kideak gehitu</label>
+        <div id="group-member-list" style="display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button class="btn-g" onclick="createGroup()" style="font-size:.88rem;padding:11px;">✅ Sortu taldea</button>
+        <button class="btn-outline" onclick="closeGroupModal()" style="font-size:.88rem;padding:11px;">✕ Utzi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL: EDIT PROFILE ══════════════ -->
+<div id="modal-edit" class="modal-bg" style="display:none;" onclick="closeEditModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()" style="max-width:480px;">
+    <div style="padding:28px;">
+      <h3 style="font-size:1.2rem;font-weight:800;color:#1b4332;margin-bottom:20px;">✏️ Profila editatu</h3>
+      <div style="margin-bottom:14px;">
+        <label class="lbl">📸 Profil argazkia</label>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div id="edit-avatar-prev" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#52b788,#1b4332);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;font-weight:800;overflow:hidden;flex-shrink:0;"></div>
+          <div style="border:2px dashed #a7f3d0;border-radius:12px;padding:12px 20px;cursor:pointer;text-align:center;background:#f0fdf4;font-size:.82rem;color:#374151;" onclick="document.getElementById('edit-photo').click()">
+            📤 Argazkia aldatu
+          </div>
+          <input type="file" id="edit-photo" accept="image/*" style="display:none;" onchange="handleEditPhoto(event)"/>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label class="lbl">📝 Niri buruz</label>
+        <textarea id="edit-bio" class="inp" style="min-height:80px;resize:vertical;" placeholder="Kontatzu zerbait zure buruaz..."></textarea>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label class="lbl">🎂 Adina</label>
+        <input id="edit-age" type="number" class="inp" min="16" max="99"/>
+      </div>
+      <button class="btn-g" onclick="saveEditProfile()">💾 Gorde</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script src="data.js"></script>
+<script>
+// ═══════════════════════════════════════════════════
+//  QUIZ OPTIONS INIT (populated from data.js)
+// ═══════════════════════════════════════════════════
+function initQuizOptions(){
+  // Cities
+  const citySelect = document.getElementById('q-city');
+  QUIZ_DATA.cities.forEach(c=>{
+    const opt=document.createElement('option');
+    opt.textContent=c; citySelect.appendChild(opt);
+  });
+  // Option buttons helper
+  const fillOpts=(containerId, items, key, multi=true)=>{
+    const fn = multi ? 'toggleOpt' : 'pickOpt';
+    document.getElementById(containerId).innerHTML =
+      items.map(t=>`<button class="opt-btn" onclick="${fn}(this,'${key}')">${t}</button>`).join('');
+  };
+  fillOpts('food-opts',  QUIZ_DATA.food,        'food');
+  fillOpts('sport-opts', QUIZ_DATA.sport,       'sport');
+  fillOpts('free-opts',  QUIZ_DATA.free,        'free');
+  fillOpts('music-opts', QUIZ_DATA.music,       'music');
+  fillOpts('pers-opts',  QUIZ_DATA.personality, 'pers');
+  fillOpts('plans-opts', QUIZ_DATA.plans,       'plans');
+}
+document.addEventListener('DOMContentLoaded', initQuizOptions);
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let currentUser = null;         // logged-in user profile
+let quizData = {};              // answers during quiz
+let selectedGender = '';
+let quizStep = 1;
+const totalSteps = 7;
+let chats = {};                 // { userId: [{from,text,time},...] }
+let groups = [];                // [{id,name,emoji,members:[ids],messages:[]}]
+let activeChatId = null;        // 'u-{id}' or 'g-{id}'
+let currentModal = null;        // profile id open in modal
+let discoverFilter = 'all';
+let selectedGroupEmoji = '⚽';
+
+// ═══════════════════════════════════════════════════
+//  SCREENS
+// ═══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════
+function switchTab(t){
+  document.getElementById('form-login').style.display = t==='login'?'block':'none';
+  document.getElementById('form-reg').style.display = t==='reg'?'block':'none';
+  const tl=document.getElementById('tab-login'), tr=document.getElementById('tab-reg');
+  if(t==='login'){
+    tl.style.background='#fff';tl.style.color='#1b4332';tl.style.boxShadow='0 1px 6px rgba(0,0,0,.1)';
+    tr.style.background='transparent';tr.style.color='#6b7280';tr.style.boxShadow='none';
+  } else {
+    tr.style.background='#fff';tr.style.color='#1b4332';tr.style.boxShadow='0 1px 6px rgba(0,0,0,.1)';
+    tl.style.background='transparent';tl.style.color='#6b7280';tl.style.boxShadow='none';
+  }
+}
+
+function doLogin(){
+  const email=document.getElementById('li-email').value.trim();
+  const pass=document.getElementById('li-pass').value.trim();
+  if(!email||!pass){showToast('❗ Bete eremu guztiak');return;}
+  // Check saved account
+  const saved = JSON.parse(localStorage.getItem('lagunapp_user')||'null');
+  if(saved && saved.email===email && saved.pass===pass){
+    currentUser=saved;
+    seedChats();
+    enterApp();
+  } else {
+    showToast('❌ Email edo pasahitza okerrak');
+  }
+}
+
+function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const username=document.getElementById('reg-user').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value.trim();
+  if(!name||!username||!email||!pass){showToast('❗ Bete eremu guztiak');return;}
+  if(pass.length<6){showToast('❗ Pasahitzak 6 karaktere behar ditu gutxienez');return;}
+  currentUser = {name, username, email, pass,
+    age:0, city:'', gender:'', bio:'', food:[], sport:[], free:[], music:[], pers:[], plans:[], photoData:null};
+  showScreen('sc-quiz');
+  goToStep(1);
+}
+
+function doLogout(){
+  currentUser=null; chats={}; groups=[];
+  showScreen('sc-login');
+}
+
+// ═══════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════
+function goToStep(n){
+  quizStep=n;
+  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('qs-'+n).classList.add('active');
+  const pct=Math.round((n/totalSteps)*100);
+  document.getElementById('quiz-bar').style.width=pct+'%';
+  document.getElementById('quiz-pct').textContent=pct+'%';
+  document.getElementById('quiz-step-lbl').textContent='Galdera '+n+' / '+totalSteps;
+}
+
+function pickOpt(el, group){
+  el.closest('.quiz-step').querySelectorAll('[onclick*="'+group+'"]').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  if(group==='gender') selectedGender=el.textContent.replace(/^[^ ]+ /,'');
+}
+
+function toggleOpt(el, group){
+  el.classList.toggle('sel');
+}
+
+function getSelected(stepEl, group){
+  return [...stepEl.querySelectorAll('.opt-btn.sel')].map(b=>b.textContent.trim());
+}
+
+function nextStep(n){
+  const step=document.getElementById('qs-'+n);
+  if(n===1){
+    const age=document.getElementById('q-age').value;
+    const city=document.getElementById('q-city').value;
+    if(!age||!city){showToast('❗ Bete adina eta hiria');return;}
+    currentUser.age=parseInt(age);
+    currentUser.city=city;
+    currentUser.gender=selectedGender||'Ez esana';
+  } else {
+    const key=['','','food','sport','free','music','pers','plans'][n];
+    const vals=getSelected(step,key);
+    if(vals.length===0){showToast('❗ Hautatu gutxienez bat');return;}
+    currentUser[key]=vals;
+  }
+  goToStep(n+1);
+}
+
+function prevStep(n){ goToStep(n-1); }
+
+function finishQuiz(){
+  const step=document.getElementById('qs-7');
+  const plans=getSelected(step,'plans');
+  if(plans.length===0){showToast('❗ Hautatu gutxienez plan bat');return;}
+  currentUser.plans=plans;
+  // Save to localStorage
+  localStorage.setItem('lagunapp_user', JSON.stringify(currentUser));
+  seedChats();
+  enterApp();
+}
+
+// ═══════════════════════════════════════════════════
+//  ENTER APP
+// ═══════════════════════════════════════════════════
+function enterApp(){
+  showScreen('sc-app');
+  renderTopbar();
+  renderDiscover();
+  renderMyProfile();
+  renderChatList();
+  renderGroups();
+  switchView('discover');
+  showToast('🎉 Ongi etorri, '+currentUser.name+'!');
+}
+
+function renderTopbar(){
+  const a=document.getElementById('topbar-avatar');
+  if(currentUser.photoData){
+    a.innerHTML=`<img src="${currentUser.photoData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+  } else {
+    a.textContent=currentUser.name[0].toUpperCase();
+  }
+  document.getElementById('topbar-name').textContent=currentUser.name;
+}
+
+// ═══════════════════════════════════════════════════
+//  VIEWS
+// ═══════════════════════════════════════════════════
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const titles={discover:'🔍 Lagun berriak aurkitu',chat:'💬 Mezuak',groups:'👥 Taldeak',myprofile:'👤 Nire Profila'};
+  document.getElementById('topbar-title').textContent=titles[v]||'';
+  document.getElementById('view-'+v).classList.add('active');
+  const sbMap={discover:'sb-discover',chat:'sb-chat',groups:'sb-groups',myprofile:'sb-profile'};
+  if(sbMap[v]) document.getElementById(sbMap[v]).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+//  DISCOVER
+// ═══════════════════════════════════════════════════
+let searchTerm='';
+
+function setDiscoverFilter(f,el){
+  discoverFilter=f;
+  document.querySelectorAll('#discover-filters button').forEach(b=>{
+    b.style.outline='none';b.style.fontWeight='600';
+  });
+  el.style.outline='2px solid #1b4332';
+  renderDiscover();
+}
+
+function filterDiscover(){
+  searchTerm=document.getElementById('search-input').value.toLowerCase();
+  renderDiscover();
+}
+
+function calcMatch(u){
+  if(!currentUser||!currentUser.sport) return Math.floor(Math.random()*30)+50;
+  let score=0;
+  const common=(a,b)=>(a||[]).filter(x=>(b||[]).includes(x)).length;
+  score+=common(currentUser.sport,u.sport)*12;
+  score+=common(currentUser.music,u.music)*10;
+  score+=common(currentUser.free,u.free)*8;
+  score+=common(currentUser.plans,u.plans)*8;
+  score+=common(currentUser.food,u.food)*5;
+  score+=common(currentUser.pers,u.pers)*5;
+  const ageDiff=Math.abs((currentUser.age||20)-u.age);
+  if(ageDiff<=3) score+=12; else if(ageDiff<=7) score+=6;
+  if(currentUser.city===u.city) score+=10;
+  return Math.min(Math.round(score*1.1)+30,99);
+}
+
+function renderDiscover(){
+  const grid=document.getElementById('discover-grid');
+  let users=[...demoUsers];
+  if(searchTerm) users=users.filter(u=>u.name.toLowerCase().includes(searchTerm)||u.city.toLowerCase().includes(searchTerm));
+  if(discoverFilter!=='all') users=users.filter(u=>(u[discoverFilter]||[]).length>0);
+
+  users=users.map(u=>({...u,match:calcMatch(u)})).sort((a,b)=>b.match-a.match);
+
+  grid.innerHTML=users.map(u=>{
+    const tags=[...(u.sport||[]).slice(0,1),...(u.music||[]).slice(0,1),...(u.free||[]).slice(0,1)];
+    return `
+    <div class="profile-card" onclick="openProfileModal(${u.id})">
+      <div class="card-header"></div>
+      <div style="padding:0 16px 16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="card-avatar bg-gradient-to-br ${u.color}">${u.photoData?`<img src="${u.photoData}"/>`:(u.avatar)}</div>
+          <div class="match-pill" style="margin-top:8px;">${u.match}% match</div>
+        </div>
+        <div style="margin-top:8px;">
+          <div style="font-weight:700;font-size:.95rem;color:#111;">${u.name}</div>
+          <div style="font-size:.75rem;color:#6b7280;margin-bottom:8px;">${u.city} · ${u.age} urte · ${u.gender}</div>
+          <div style="font-size:.78rem;color:#374151;line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${u.bio}</div>
+          <div>${tags.map(t=>`<span class="tag tag-g">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  PROFILE MODAL
+// ═══════════════════════════════════════════════════
+function openProfileModal(id){
+  const u=demoUsers.find(x=>x.id===id);
+  if(!u) return;
+  currentModal=id;
+  const av=document.getElementById('pm-avatar');
+  av.className=`modal-avatar bg-gradient-to-br ${u.color}`;
+  av.innerHTML=u.photoData?`<img src="${u.photoData}"/>`:(u.avatar);
+  document.getElementById('pm-name').textContent=u.name;
+  document.getElementById('pm-sub').textContent=`${u.city} · ${u.age} urte · ${u.gender}`;
+  document.getElementById('pm-bio').textContent=u.bio;
+  document.getElementById('pm-match').textContent=calcMatch(u)+'% match';
+  const renderTags=(id,arr,cls)=>{
+    document.getElementById(id).innerHTML=(arr||[]).map(t=>`<span class="tag ${cls}">${t}</span>`).join('')||'<span style="color:#9ca3af;font-size:.75rem;">-</span>';
+  };
+  renderTags('pm-sports',u.sport,'tag-g');
+  renderTags('pm-music',u.music,'tag-b');
+  renderTags('pm-free',u.free,'tag-p');
+  renderTags('pm-plans',u.plans,'tag-y');
+  renderTags('pm-pers',u.pers,'tag-pk');
+  document.getElementById('modal-profile').style.display='flex';
+}
+function closeProfileModal(e){
+  if(!e||e.target===document.getElementById('modal-profile')){
+    document.getElementById('modal-profile').style.display='none';
+    currentModal=null;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  CHAT
+// ═══════════════════════════════════════════════════
+function renderChatList(){
+  const list=document.getElementById('chat-list-items');
+  // Personal chats
+  let html='';
+  // From chats object
+  const chatIds=Object.keys(chats);
+  chatIds.forEach(uid=>{
+    const u=demoUsers.find(x=>x.id===parseInt(uid));
+    if(!u) return;
+    const msgs=chats[uid];
+    const last=msgs[msgs.length-1];
+    html+=`<div class="chat-item ${activeChatId==='u-'+uid?'active':''}" onclick="openChat('u-${uid}')">
+      <div class="chat-avatar bg-gradient-to-br ${u.color}">${u.photoData?`<img src="${u.photoData}"/>`:(u.avatar)}</div>
+      <div style="min-width:0;">
+        <div class="chat-name">${u.name}</div>
+        <div class="chat-preview">${last?last.text:''}</div>
+      </div>
+    </div>`;
+  });
+  // Groups
+  groups.forEach(g=>{
+    const last=g.messages[g.messages.length-1];
+    const fromUser=last?(last.from==='me'?currentUser.name:(demoUsers.find(x=>x.id===last.from)||{name:''}).name):'';
+    html+=`<div class="chat-item ${activeChatId==='g-'+g.id?'active':''}" onclick="openChat('g-${g.id}')">
+      <div class="chat-avatar" style="background:linear-gradient(135deg,#52b788,#1b4332);font-size:1.3rem;">${g.emoji}</div>
+      <div style="min-width:0;">
+        <div class="chat-name">${g.name}</div>
+        <div class="chat-preview">${fromUser?fromUser+': ':''} ${last?last.text:''}</div>
+      </div>
+    </div>`;
+  });
+  list.innerHTML=html||'<div style="padding:20px;color:#9ca3af;font-size:.82rem;text-align:center;">Oraindik ez dago elkarrizketarik</div>';
+  document.getElementById('chat-count').textContent=` (${chatIds.length+groups.length})`;
+}
+
+function openChat(cid){
+  activeChatId=cid;
+  document.getElementById('no-chat-msg').style.display='none';
+  document.getElementById('chat-active').style.display='flex';
+  renderChatList();
+  renderChatWindow();
+}
+
+function renderChatWindow(){
+  if(!activeChatId) return;
+  const isGroup=activeChatId.startsWith('g-');
+  const cav=document.getElementById('ca-avatar');
+  const cname=document.getElementById('ca-name');
+  const msgs=document.getElementById('chat-messages');
+
+  if(isGroup){
+    const gid=activeChatId.replace('g-','');
+    const g=groups.find(x=>x.id===gid);
+    if(!g) return;
+    cav.style.background='linear-gradient(135deg,#52b788,#1b4332)';
+    cav.innerHTML=`<span style="font-size:1.1rem;">${g.emoji}</span>`;
+    cname.textContent=g.name+' ('+g.members.length+' kide)';
+    msgs.innerHTML=g.messages.map(m=>{
+      const isMe=m.from==='me';
+      const sender=isMe?currentUser.name:(demoUsers.find(x=>x.id===m.from)||{name:'?'}).name;
+      return `<div>
+        ${!isMe?`<div style="font-size:.68rem;color:#9ca3af;margin-bottom:2px;padding-left:8px;">${sender}</div>`:''}
+        <div class="msg ${isMe?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${m.time}</div></div>
+      </div>`;
+    }).join('');
+  } else {
+    const uid=parseInt(activeChatId.replace('u-',''));
+    const u=demoUsers.find(x=>x.id===uid);
+    if(!u) return;
+    cav.className=`chat-avatar bg-gradient-to-br ${u.color}`;
+    cav.innerHTML=u.photoData?`<img src="${u.photoData}"/>`:(u.avatar);
+    cname.textContent=u.name;
+    const messages=chats[uid]||[];
+    msgs.innerHTML=messages.map(m=>{
+      const isMe=m.from==='me';
+      return `<div class="msg ${isMe?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${m.time}</div></div>`;
+    }).join('');
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function sendMessage(){
+  const inp=document.getElementById('chat-msg-input');
+  const text=inp.value.trim();
+  if(!text||!activeChatId) return;
+  const now=new Date();
+  const time=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  const isGroup=activeChatId.startsWith('g-');
+  if(isGroup){
+    const gid=activeChatId.replace('g-','');
+    const g=groups.find(x=>x.id===gid);
+    if(g) g.messages.push({from:'me',text,time});
+  } else {
+    const uid=parseInt(activeChatId.replace('u-',''));
+    if(!chats[uid]) chats[uid]=[];
+    chats[uid].push({from:'me',text,time});
+    // Simulate reply after 1.2s
+    const u=demoUsers.find(x=>x.id===uid);
+    const replies=["Haha bai! 😄","Interesgarria!","Ados!","Kontatu gehiago!","Gustatu zait! 🙌","Egia da! 💯","Ados nago! Ondo esana 👍","😂😂 hori ona da!"];
+    setTimeout(()=>{
+      chats[uid].push({from:uid, text:replies[Math.floor(Math.random()*replies.length)], time: (() => {
+        const t=new Date(); return t.getHours()+':'+String(t.getMinutes()).padStart(2,'0');
+      })()});
+      renderChatWindow();
+      renderChatList();
+    },1200+Math.random()*800);
+  }
+  inp.value='';
+  renderChatWindow();
+  renderChatList();
+}
+
+function startChatWith(id){
+  const uid=parseInt(id);
+  if(!chats[uid]) chats[uid]=[];
+  closeProfileModal();
+  switchView('chat');
+  document.getElementById('sb-chat').classList.add('active');
+  document.getElementById('sb-discover').classList.remove('active');
+  setTimeout(()=>{openChat('u-'+uid);},100);
+  document.getElementById('topbar-title').textContent='💬 Mezuak';
+}
+
+function openProfileFromChat(){
+  if(!activeChatId||activeChatId.startsWith('g-')) return;
+  const uid=parseInt(activeChatId.replace('u-',''));
+  openProfileModal(uid);
+}
+
+// ═══════════════════════════════════════════════════
+//  GROUPS
+// ═══════════════════════════════════════════════════
+function renderGroups(){
+  const list=document.getElementById('groups-list');
+  if(groups.length===0){
+    list.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af;"><div style="font-size:3rem;margin-bottom:12px;">👥</div><div style="font-weight:600;">Oraindik ez dago talderik</div><div style="font-size:.82rem;margin-top:6px;">Sortu lehen taldea!</div></div>';
+    return;
+  }
+  list.innerHTML=groups.map(g=>{
+    const members=[currentUser,...g.members.map(id=>demoUsers.find(x=>x.id===id)).filter(Boolean)];
+    const last=g.messages[g.messages.length-1];
+    const fromName=last?(last.from==='me'?currentUser.name:(demoUsers.find(x=>x.id===last.from)||{name:'?'}).name):'';
+    return `<div class="group-card" onclick="openGroupChat('${g.id}')">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="group-icon" style="background:linear-gradient(135deg,#e8f5e9,#d8f3dc);">${g.emoji}</div>
+        <div>
+          <div style="font-weight:700;font-size:.95rem;color:#111;">${g.name}</div>
+          <div style="font-size:.75rem;color:#6b7280;">${members.length} kide</div>
+        </div>
+      </div>
+      <div style="font-size:.8rem;color:#6b7280;background:#f9fafb;border-radius:10px;padding:10px;line-height:1.5;">
+        ${last?`<strong>${fromName}:</strong> ${last.text}`:'<span style="color:#9ca3af;">Oraindik ez dago mezurik</span>'}
+      </div>
+      <div style="display:flex;margin-top:12px;gap:-8px;">
+        ${members.slice(0,5).map((m,i)=>`
+          <div style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-left:${i>0?'-8px':'0'};background:linear-gradient(135deg,${'m' in m?'#52b788,#1b4332':(m.color||'#52b788,#1b4332')});display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;font-weight:700;z-index:${5-i};">
+            ${m.name?m.name[0]:'?'}
+          </div>`).join('')}
+        ${members.length>5?`<div style="font-size:.7rem;color:#6b7280;margin-left:8px;align-self:center;">+${members.length-5}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openGroupChat(gid){
+  switchView('chat');
+  document.getElementById('topbar-title').textContent='💬 Mezuak';
+  setTimeout(()=>{ openChat('g-'+gid); renderChatList(); },100);
+}
+
+function openCreateGroup(){
+  // Build member list
+  const ml=document.getElementById('group-member-list');
+  ml.innerHTML=demoUsers.map(u=>`
+    <div>
+      <input type="checkbox" class="member-check" id="mc-${u.id}" value="${u.id}"/>
+      <label class="member-label" for="mc-${u.id}">
+        <div class="chat-avatar bg-gradient-to-br ${u.color}" style="width:36px;height:36px;font-size:.85rem;">${u.avatar}</div>
+        <div>
+          <div style="font-weight:600;font-size:.88rem;">${u.name}</div>
+          <div style="font-size:.72rem;color:#6b7280;">${u.city} · ${u.age} urte</div>
+        </div>
+      </label>
+    </div>
+  `).join('');
+  document.getElementById('modal-group').style.display='flex';
+}
+function closeGroupModal(e){
+  if(!e||e.target===document.getElementById('modal-group')){
+    document.getElementById('modal-group').style.display='none';
+  }
+}
+
+function pickEmoji(el,em){
+  selectedGroupEmoji=em;
+  document.querySelectorAll('.emoji-opt').forEach(e=>{e.style.background='';e.style.outline='';});
+  el.style.background='#d8f3dc';
+  el.style.outline='2px solid #52b788';
+  el.style.borderRadius='8px';
+}
+
+function createGroup(){
+  const name=document.getElementById('grp-name').value.trim();
+  if(!name){showToast('❗ Eman izena taldeari');return;}
+  const checked=[...document.querySelectorAll('.member-check:checked')].map(c=>parseInt(c.value));
+  if(checked.length===0){showToast('❗ Hautatu gutxienez kide bat');return;}
+  const newGroup={
+    id:'g'+(Date.now()),
+    name,
+    emoji:selectedGroupEmoji,
+    members:checked,
+    messages:[]
+  };
+  groups.push(newGroup);
+  closeGroupModal();
+  renderGroups();
+  renderChatList();
+  showToast('✅ "'+name+'" taldea sortuta!');
+  document.getElementById('grp-name').value='';
+}
+
+// ═══════════════════════════════════════════════════
+//  MY PROFILE
+// ═══════════════════════════════════════════════════
+function renderMyProfile(){
+  if(!currentUser) return;
+  const mp=id=>document.getElementById(id);
+  // Avatar
+  const av=mp('mp-avatar');
+  if(currentUser.photoData){
+    av.innerHTML=`<img src="${currentUser.photoData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+    av.style.background='none';
+  } else {
+    av.textContent=currentUser.name[0].toUpperCase();
+    av.style.background='linear-gradient(135deg,#52b788,#1b4332)';
+  }
+  mp('mp-name').textContent=currentUser.name;
+  mp('mp-sub').textContent=[currentUser.age?(currentUser.age+' urte'):'',currentUser.city,currentUser.gender].filter(Boolean).join(' · ')||'Bete zure profila';
+  mp('mp-bio').textContent=currentUser.bio||'Ez da biografia idatzi oraindik. Editatu zure profila!';
+
+  const renderTags=(id,arr,cls)=>{ mp(id).innerHTML=(arr||[]).map(t=>`<span class="tag ${cls}">${t}</span>`).join('')||'<span style="color:#9ca3af;font-size:.75rem;">-</span>'; };
+  renderTags('mp-sports',currentUser.sport,'tag-g');
+  renderTags('mp-music',currentUser.music,'tag-b');
+  renderTags('mp-free',currentUser.free,'tag-p');
+  renderTags('mp-plans',currentUser.plans,'tag-y');
+  renderTags('mp-pers',currentUser.pers,'tag-pk');
+}
+
+function openEditProfile(){
+  const ep=id=>document.getElementById(id);
+  ep('edit-age').value=currentUser.age||'';
+  ep('edit-bio').value=currentUser.bio||'';
+  const av=ep('edit-avatar-prev');
+  if(currentUser.photoData){
+    av.innerHTML=`<img src="${currentUser.photoData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+    av.style.background='none';
+  } else {
+    av.textContent=currentUser.name[0].toUpperCase();
+    av.style.background='linear-gradient(135deg,#52b788,#1b4332)';
+  }
+  document.getElementById('modal-edit').style.display='flex';
+}
+function closeEditModal(e){
+  if(!e||e.target===document.getElementById('modal-edit')){
+    document.getElementById('modal-edit').style.display='none';
+  }
+}
+function handleEditPhoto(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    currentUser.photoData=e.target.result;
+    const av=document.getElementById('edit-avatar-prev');
+    av.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+    av.style.background='none';
+  };
+  reader.readAsDataURL(file);
+}
+function saveEditProfile(){
+  const age=parseInt(document.getElementById('edit-age').value);
+  if(age&&(age<16||age>99)){showToast('❗ Adina 16-99 artean izan behar da');return;}
+  if(age) currentUser.age=age;
+  currentUser.bio=document.getElementById('edit-bio').value.trim();
+  localStorage.setItem('lagunapp_user',JSON.stringify(currentUser));
+  document.getElementById('modal-edit').style.display='none';
+  renderMyProfile();
+  renderTopbar();
+  showToast('✅ Profila eguneratuta!');
+}
+
+// ═══════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+// Check for demo auto-login shortcut (press space on login screen)
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('modal-profile').style.display='none';
+    document.getElementById('modal-group').style.display='none';
+    document.getElementById('modal-edit').style.display='none';
+  }
+});
+// Pre-fill demo login
+document.getElementById('li-email').value = DEMO_EMAIL;
+document.getElementById('li-pass').value  = DEMO_PASSWORD;
+
+// If there's a saved user, pre-fill
+const saved=JSON.parse(localStorage.getItem('lagunapp_user')||'null');
+if(saved){
+  document.getElementById('li-email').value=saved.email;
+  document.getElementById('li-pass').value=saved.pass;
+}
+</script>
+</body>
+</html>
