@@ -1,23 +1,25 @@
 // ═══════════════════════════════════════════════════
-//  LAGUNAPP — DATA (Versión Limpia / Sin Bots)
+//  LAGUNAPP — DATA (Persistencia con LocalStorage)
 // ═══════════════════════════════════════════════════
 
 /** 
- * Lista de usuarios vacía. 
- * No aparecerán perfiles en la sección de "Descubrir".
+ * Usuarios: Intenta cargar 'lagunapp_users' del navegador. 
+ * Si no existe (primera vez), devuelve un array vacío [].
  */
-const demoUsers = [];
+let demoUsers = JSON.parse(localStorage.getItem('lagunapp_users')) || [];
 
 /** 
- * Inicialización de chats y grupos vacía.
- * No habrá conversaciones ni grupos por defecto.
+ * Chats y Grupos: Se cargan dinámicamente desde el almacenamiento local.
  */
 function seedChats() {
-  chats = {}; 
-  groups = [];
+  // Carga los chats guardados o un objeto vacío
+  chats = JSON.parse(localStorage.getItem('lagunapp_chats')) || {};
+  
+  // Carga los grupos guardados o un array vacío
+  groups = JSON.parse(localStorage.getItem('lagunapp_groups')) || [];
 }
 
-// ── Quiz options (Se mantienen para que el registro funcione) ────────────────
+// ── Quiz options (Necesarios para que el registro funcione) ────────────────
 const QUIZ_DATA = {
   cities: [
     "Bilbo","Donostia","Gasteiz","Iruñea","Baiona",
