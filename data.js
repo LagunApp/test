@@ -17,17 +17,7 @@ function seedChats() {
     {from:5, text:"Hola! Ikusten dut surfzalea zarela... Zarautzen ibiltzen zara?", time:"Atzo"},
     {from:'me', text:"Bai! Udan bai, behintzat. Zu Zarautzkoa zara ezta?", time:"Atzo"},
   ];
-  groups = [
-    {id:'g1', name:"Mendizaleak", emoji:"🏔️", members:[2,3,6], messages:[
-      {from:2, text:"Bihar mendira goaz? ⛏️", time:"09:00"},
-      {from:3, text:"Ni prest nago! Zertan gelditzen gara?", time:"09:15"},
-      {from:'me', text:"Ni ere nator! Zein menditara?", time:"09:20"},
-      {from:2, text:"Aizkorri, 8etan partida!", time:"09:22"},
-    ]},
-    {id:'g2', name:"Rock Lovers", emoji:"🎵", members:[1,6], messages:[
-      {from:1, text:"Gaueko kontzertura joaten da inor?", time:"Atzo"},
-      {from:6, text:"Ni bai! Zein da taldea?", time:"Atzo"},
-    ]},
+  groups = []},
   ];
 }
 
