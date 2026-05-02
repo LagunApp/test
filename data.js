@@ -8,15 +8,7 @@ const demoUsers = [];
 // ── Seed chats & groups ─────────────────────────────
 function seedChats() {
   chats = {};
-  chats[1] = [
-    {from:1, text:"Kaixo! LagunApp-en ikusi zaitut, futbola gustatzen zaizu berari ere? ⚽", time:"10:23"},
-    {from:'me', text:"Bai! Futbola maite dut. Zein talde gustatzen zaizu?", time:"10:25"},
-    {from:1, text:"Athletic Club, noski! 😄 Noizean behea partidu bat ikusi nahi izanez gero, abisatu!", time:"10:26"},
-  ];
-  chats[5] = [
-    {from:5, text:"Hola! Ikusten dut surfzalea zarela... Zarautzen ibiltzen zara?", time:"Atzo"},
-    {from:'me', text:"Bai! Udan bai, behintzat. Zu Zarautzkoa zara ezta?", time:"Atzo"},
-  ];
+  chats[1] = [];
   groups = []},
   ];
 }
